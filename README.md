@@ -10,3 +10,8 @@ Libraries Used:
 
 Hosting:
 1. Firebase
+
+
+Color Scheme:
+1. Each letter is assigned with fixed color.
+2. Duplicate letters are removed and considered as single letter for repetition in word.
