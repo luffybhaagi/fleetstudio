@@ -4,16 +4,27 @@ import {
   ButtonGroup,
   Container,
   Divider,
-  Paper,
   TextField,
   Typography,
 } from "@material-ui/core";
+import Paper from '@material-ui/core/Paper'
 import { makeStyles } from "@material-ui/core/styles";
 import cuid from "cuid";
 import React, { useState } from "react";
+import SearchIcon from '@material-ui/icons/Search';
+import Clear from '@material-ui/icons/Clear';
 import { Colors } from "./Colors";
 import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
+import AppBar from '@material-ui/core/AppBar';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect
+} from "react-router-dom";
+import palette from "./theme/palette";
 
 const ColorsMap = Colors;
 
@@ -23,20 +34,14 @@ function HomePage() {
   const [text, setText] = useState(null);
   const [colors, setColors] = useState([]);
   const [alert, setAlert] = useState(false);
+  const [redirect,setRedirect]=useState(false);
 
   const handleSubmit = () => {
+  
     if (text === null || text === "") {
       setAlert(true);
     } else {
-      let localColorsArray = [];
-      //removes duplicate chars from string
-      const modText=removeDuplicateCharacters(text)
-    //storing colors
-      for (let i = 0; i < modText.length; i++) {
-        console.log(ColorsMap[modText.charAt(i).toUpperCase()]);
-        localColorsArray.push(ColorsMap[modText.charAt(i).toUpperCase()]);
-      }
-      setColors(localColorsArray);
+      setRedirect(true)
     }
   };
 
@@ -65,52 +70,48 @@ function HomePage() {
     setAlert(false);
   };
 
+
+  if(redirect)
+    return <Redirect to="/list"/>
+
   return (
     <>
-      <Container className={classes.root}>
-      <Typography variant="h2" gutterBottom style={{fontFamily:"cursive"}}>
-        Colo`extism
+    
+    <AppBar>
+    <Typography variant="h1" gutterBottom style={{fontWeight:"italic",marginLeft:"1%",color:"black"}}>
+        Logo
       </Typography>
-        <Paper sm={3} className={classes.container2}>
+      </AppBar>
+      <Container className={classes.root}>
+      
+        <Box sm={3} className={classes.container2}>
           <TextField
             id="outlined-basic"
-            label="Enter Word"
+            label="Search anime"
             variant="outlined"
             value={text}
             size="small"
             onChange={(event) => handleChange(event)}
+            fullWidth
           />
           <ButtonGroup
             variant="contained"
             color="secondary"
             aria-label="contained primary button group"
           >
-            <Button onClick={handleSubmit}>Submit</Button>
-            <Button onClick={handleClear}>Clear</Button>
+            <Button 
+            onClick={()=>setRedirect(true)}
+            startIcon={<SearchIcon/>}
+            >
+            Search
+            </Button>
+            <Button 
+            onClick={handleClear}
+            endIcon={<Clear/>}
+            >Clear</Button>
           </ButtonGroup>
-        </Paper>
+        </Box>
       </Container>
-      <br></br>
-      <Divider />
-      <br></br>
-      <Container fixed className={classes.container3} square>
-        {colors.map((color) => (
-          <Box
-            className={classes.colorBox}
-            key={cuid()}
-            style={{ backgroundColor: `${color}` }}
-          >
-            <Typography>{color}</Typography>
-          </Box>
-        ))}
-      </Container>
-      {alert && (
-        <Snackbar open={alert} autoHideDuration={2000} onClose={handleClose}>
-          <Alert onClose={handleClose} severity="error">
-            Enter text to see colors
-          </Alert>
-        </Snackbar>
-      )}
     </>
   );
 }
@@ -118,20 +119,24 @@ function HomePage() {
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
+    justifyContent: "center",
+    // alignItems: "center",
+    flexDirection:"column",
+    // backgroundColor:"#D9D4D3",
+    // height:"100%",
+    marginTop:'20%',
+    // "& > *": {
+    //   margin: theme.spacing(1),
+    // },
+  },
+  container2: {
+    display: "flex",
     flexDirection: "column",
     alignItems: "center",
     "& > *": {
       margin: theme.spacing(1),
     },
-  },
-  container2: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    "& > *": {
-      margin: theme.spacing(1),
-    },
-    marginTop:'2%'
+    // marginTop:'20%'
   },
   serverButton: {
     "& > *": {
