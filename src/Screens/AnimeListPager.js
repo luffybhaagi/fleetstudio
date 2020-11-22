@@ -91,7 +91,7 @@ function AnimeListPager({
         </Button>
       </Box>
       <Box className={classes.box} elevation={3}>
-        {searchResults.length !== 0
+        { ( searchResults !== null && searchResults.length !== 0)
           ? searchResults.results.map((anime) => (
               <Card className={classes.card} key={anime.mal_id}>
                 <CardActionArea
