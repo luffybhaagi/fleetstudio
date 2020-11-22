@@ -4,14 +4,18 @@ Steps to run the app.
 3. npm start
 4. App starts opens with link : http://localhost:3000/ in default browser 
 
+Anime API: https://jikan.docs.apiary.io/#
+
 Libraries Used:
 1. Material UI
 2. ReactJS
+3. Redux Toolkit, Redux
 
 Hosting:
 1. Firebase
 
-
-Color Scheme:
-1. Each letter is assigned with fixed color.
-2. Duplicate letters are removed and considered as single letter for repetition in word.
+Implemented:
+1. Search anime.
+2. Show list of anime in masonory grid layout.
+3. Added Filters. Order by and Sort by filters.
+4. Show layout for selected anime. Displays anime details, promo trailer, List of episodes.
