@@ -3,56 +3,47 @@ import {
   Button,
   ButtonGroup,
   Container,
-  Divider,
   TextField,
   Typography,
 } from "@material-ui/core";
-import Paper from '@material-ui/core/Paper'
 import { makeStyles } from "@material-ui/core/styles";
 import cuid from "cuid";
 import React, { useState } from "react";
 import SearchIcon from '@material-ui/icons/Search';
 import Clear from '@material-ui/icons/Clear';
-import { Colors } from "./Colors";
-import Snackbar from "@material-ui/core/Snackbar";
-import Alert from "@material-ui/lab/Alert";
 import AppBar from '@material-ui/core/AppBar';
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
-  Link,
   Redirect
 } from "react-router-dom";
-import palette from "./theme/palette";
+import ErrorAlert from "./commonUtils/errorSnackBarBottom";
+import { searchResult, updateSearchText,udpateOrderBy,updatePageNumber} from './Redux/SearchSlice'
+import { connect } from "react-redux";
+import { LoadSearchAnime } from "./Server/SearchAnime";
+import CircularBackDropProgress from "./commonUtils/CIrcularBackDropProgress";
 
-const ColorsMap = Colors;
+const mapDispatch={ searchResult,updateSearchText,udpateOrderBy,updatePageNumber }
 
-function HomePage() {
+const HomePage=({searchResult,updateSearchText,udpateOrderBy,updatePageNumber}) =>{
 
   const classes = useStyles();
   const [text, setText] = useState(null);
-  const [colors, setColors] = useState([]);
-  const [alert, setAlert] = useState(false);
   const [redirect,setRedirect]=useState(false);
+  const [message,setMessage]=useState(null)
+  const [loading,setLoading]=useState(null)
 
-  const handleSubmit = () => {
+  const handleSearch =() => {
   
-    if (text === null || text === "") {
-      setAlert(true);
-    } else {
+    if (text === null || text === "" || text.length < 3) {
+      setMessage({msg:"Enter atleast 3 characters for search", key:cuid()})
+    }
+    else {
+      setLoading(true)
+      updateSearchText(text)
+      LoadSearchAnime(text, 1, searchResult, updatePageNumber)
       setRedirect(true)
+      setLoading(false)
     }
   };
-
-  function removeDuplicateCharacters(string) {
-    return string
-      .split('')
-      .filter(function(item, pos, self) {
-        return self.indexOf(item) === pos;
-      })
-      .join('');
-  }
 
   const handleChange = (event) => {
     setText(event.target.value);
@@ -60,30 +51,23 @@ function HomePage() {
 
   const handleClear = () => {
     setText("");
-    setColors([]);
   };
 
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setAlert(false);
-  };
 
+  if(loading)
+  return <CircularBackDropProgress/>
 
   if(redirect)
     return <Redirect to="/list"/>
 
   return (
     <>
-    
     <AppBar>
     <Typography variant="h1" gutterBottom style={{fontWeight:"italic",marginLeft:"1%",color:"black"}}>
-        Logo
+        Anime
       </Typography>
       </AppBar>
       <Container className={classes.root}>
-      
         <Box sm={3} className={classes.container2}>
           <TextField
             id="outlined-basic"
@@ -97,10 +81,9 @@ function HomePage() {
           <ButtonGroup
             variant="contained"
             color="secondary"
-            aria-label="contained primary button group"
           >
             <Button 
-            onClick={()=>setRedirect(true)}
+            onClick={()=>handleSearch()}
             startIcon={<SearchIcon/>}
             >
             Search
@@ -112,9 +95,12 @@ function HomePage() {
           </ButtonGroup>
         </Box>
       </Container>
+      { message && <ErrorAlert message={message.msg} key={message.key} />}
     </>
   );
 }
+
+export default connect(null, mapDispatch)(HomePage)
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -178,4 +164,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default HomePage;
+
